@@ -19,7 +19,7 @@ jobs:
         env:
           POSTGRES_USER: ci_postgres
           POSTGRES_PASSWORD: ci_postgres
-          POSTGRES_DB: test
+          POSTGRES_DB: ci_postgres
         ports:
           - 5432:5432
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 3
@@ -53,7 +53,7 @@ jobs:
         run: |
           php artisan test
         env:
-          DB_DATABASE: cicd_testing
+          DB_DATABASE: ci_postgres
 
       - name: Run Larastan
         run: |
