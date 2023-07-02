@@ -15,3 +15,13 @@ it('can fetch user roles with pagination', function () {
     expect($res->status())->toBe(200);
     expect($res->json())->toHaveKeys(['data', 'meta', 'links']);
 });
+
+it('can create user role', function () {
+    $user = \App\Models\User::factory()->create();
+    $res = \Pest\Laravel\actingAs($user)->json('POST', '/api/user-roles', [
+        'name' => 'test'
+    ]);
+
+    $this->assertDatabaseHas('user_roles', ['name' => 'test']);
+    expect($res->status())->toBe(201);
+});

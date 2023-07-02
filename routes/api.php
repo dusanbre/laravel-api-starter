@@ -14,7 +14,6 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/test', function (Request $request) {
-    return \App\Modules\UserRole\Resources\UserRoleResource::collection(\App\Modules\UserRole\Models\UserRole::paginateUnderCondition($request));
-});
+
 Route::middleware('auth:sanctum')->get('/user-roles', [\App\Http\Controllers\Api\UserRolesController::class, 'index']);
+Route::middleware('auth:sanctum')->post('/user-roles', [\App\Http\Controllers\Api\UserRolesController::class, 'store']);
