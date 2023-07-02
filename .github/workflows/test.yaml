@@ -1,0 +1,59 @@
+name: Tests
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+
+jobs:
+  tests:
+    name: Run tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Cache composer dependencies
+        uses: actions/cache@v2
+        with:
+          path: vendor
+          key: composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            composer-
+
+      - name: Install PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.2
+
+      - name: Copy .env file
+        run: |
+          cp .env.ci .env
+          cp .env.ci .env.testing
+
+      - name: Run composer
+        run: |
+          composer install --no-interaction
+
+      - name: Run test suite
+        run: |
+          php artisan test
+        env:
+          DB_DATABASE: cicd_testing
+
+      - name: Run Larastan
+        run: |
+          ./vendor/bin/phpstan analyse
+
+    services:
+      postgres:
+        image: postgres:latest
+        env:
+          POSTGRES_USER: ci_postgres
+          POSTGRES_PASSWORD: ci_postgres
+          POSTGRES_DB: ci_postgres
+        ports:
+          - 5432/tcp
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 3
